@@ -2,8 +2,10 @@ import { Todo } from "@/types/todo";
 import React from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { FaEllipsisH } from "react-icons/fa";
+import { useRouter } from "next/router";
 import { useDeleteTodoMutation } from "@/services/todoApi";
 import { ToastContainer, toast } from "react-toastify";
+
 interface MyDataTableProps {
   data: Todo[];
   headers: string[];
@@ -11,15 +13,19 @@ interface MyDataTableProps {
 
 const MyDataTable: React.FC<MyDataTableProps> = ({ data, headers }) => {
   const [deleteTodo] = useDeleteTodoMutation();
+  const router = useRouter();
 
   const handleDelete = async (id: number) => {
     try {
       await deleteTodo(id).unwrap();
-
       toast.success("Todo deleted successfully!");
     } catch (error) {
       console.error("Failed to delete the todo: ", error);
     }
+  };
+
+  const handleUpdate = (id: number) => {
+    router.push(`/editTask?id=${id}`);
   };
 
   return (
@@ -84,6 +90,7 @@ const MyDataTable: React.FC<MyDataTableProps> = ({ data, headers }) => {
                             {({ active }) => (
                               <a
                                 href="#"
+                                onClick={() => handleUpdate(item.id)}
                                 className={`${
                                   active
                                     ? "bg-gray-100 text-gray-900"

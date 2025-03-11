@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAddTodoMutation } from "../services/todoApi";
+import { useAddTodoMutation, useUpdateTodoMutation } from "../services/todoApi";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClipLoader } from "react-spinners"; // Import the ClipLoader component
+import { ClipLoader } from "react-spinners";
 import { TodoFormData } from "../types/todo";
 
 const schema = z.object({
@@ -22,46 +22,84 @@ const schema = z.object({
     }),
 });
 
-const AddTodo = () => {
+interface AddTodoProps {
+  initialData?: TodoFormData;
+  mode: "add" | "edit";
+}
+
+const AddTodo: React.FC<AddTodoProps> = ({ initialData, mode }) => {
   const [addTodo] = useAddTodoMutation();
+  const [updateTodo] = useUpdateTodoMutation();
   const router = useRouter();
-  const [loading, setLoading] = useState(false); // State to track loading status
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: initialData || {},
   });
 
+  useEffect(() => {
+    if (initialData) {
+      setValue("title", initialData.title);
+      setValue("description", initialData.description);
+      setValue("dueDate", initialData.dueDate);
+      setValue("priority", initialData.priority);
+      setValue("assignedTo", initialData.assignedTo);
+      setValue("status", initialData.status);
+    }
+  }, [initialData, setValue]);
+
   const onSubmit = async (data: TodoFormData) => {
-    setLoading(true); // Set loading to true when the form is submitted
+    setLoading(true);
     try {
-      await addTodo({
-        ...data,
-        completed: data.status === "Completed",
-      }).unwrap();
-      toast.success("Todo added successfully!");
+      if (mode === "add") {
+        await addTodo({
+          ...data,
+          completed: data.status === "Completed",
+        }).unwrap();
+        toast.success("Todo added successfully!");
+      } else {
+        if (initialData?.id) {
+          await updateTodo({
+            id: initialData.id,
+            ...data,
+            completed: data.status === "Completed",
+          }).unwrap();
+          toast.success("Todo updated successfully!");
+        } else {
+          throw new Error("Todo ID is missing for update");
+        }
+      }
       setTimeout(() => {
         router.push("/");
-      }, 2000); // Redirect after 2 seconds
+      }, 2000);
     } catch (error) {
-      console.error("Failed to add todo:", error);
-      toast.error("Failed to add todo.");
+      console.error(
+        `Failed to ${mode === "add" ? "add" : "update"} todo:`,
+        error
+      );
+      toast.error(`Failed to ${mode === "add" ? "add" : "update"} todo.`);
     } finally {
-      setLoading(false); // Set loading to false after the API call is complete
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {loading && (
-        <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
           <ClipLoader color="#00BFFF" size={80} />
         </div>
       )}
       <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4">Add New Todo</h1>
+        <h1 className="text-2xl font-bold mb-4">
+          {mode === "add" ? "Add New Todo" : "Edit Todo"}
+        </h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
@@ -137,7 +175,11 @@ const AddTodo = () => {
                 : "bg-blue-500 hover:bg-blue-600"
             } text-white px-4 py-2 rounded w-full transition duration-200`}
           >
-            {loading ? "Submitting..." : "Add Todo"}
+            {loading
+              ? "Submitting..."
+              : mode === "add"
+              ? "Add Todo"
+              : "Update Todo"}
           </button>
         </form>
       </div>

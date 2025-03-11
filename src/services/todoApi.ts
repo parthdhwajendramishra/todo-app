@@ -1,6 +1,6 @@
 // services/todoApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { AddTodoData, Todo } from '../types/todo';
+import { AddTodoData, Todo, TodoFormData } from '../types/todo';
 
 export const todoApi = createApi({
   reducerPath: 'todoApi',
@@ -9,7 +9,7 @@ export const todoApi = createApi({
     getTodos: builder.query<Todo[], { page: number; limit: number; sortOrder: 'asc' | 'desc' }>({
       query: ({ page, limit, sortOrder }) => `/todos?_page=${page}&_limit=${limit}&_sort=id&_order=${sortOrder}`,
     }),
-    getTodoById: builder.query<Todo, number>({
+    getTodoById: builder.query<TodoFormData, number>({
       query: (id) => `/todos/${id}`, // Endpoint for fetching a single todo by ID
     }),
     searchTodos: builder.query<Todo[], string>({
@@ -28,7 +28,14 @@ export const todoApi = createApi({
         method: 'DELETE',
       }),
     }),
+    updateTodo: builder.mutation<TodoFormData, Partial<TodoFormData> & Pick<TodoFormData, 'id'>>({
+      query: ({ id, ...patch }) => ({
+        url: `/todos/${id}`,
+        method: 'PATCH',
+        body: patch,
+      }),
+    }),
   }),
 });
 
-export const { useGetTodosQuery, useGetTodoByIdQuery, useSearchTodosQuery, useAddTodoMutation, useDeleteTodoMutation } = todoApi;
+export const { useGetTodosQuery, useGetTodoByIdQuery, useSearchTodosQuery, useAddTodoMutation, useDeleteTodoMutation, useUpdateTodoMutation } = todoApi;

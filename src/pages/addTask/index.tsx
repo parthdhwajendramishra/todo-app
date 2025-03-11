@@ -3,7 +3,7 @@ import AddTodo from "@/components/AddToDo";
 export default function AddTask() {
   return (
     <div>
-      <AddTodo />
+      <AddTodo mode="add" />
     </div>
   );
 }

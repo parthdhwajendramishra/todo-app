@@ -15,7 +15,9 @@ export interface AddTodoData {
 }
 
 export interface TodoFormData {
+    id?: number;
     title: string;
+    completed?: boolean;
     description: string;
     dueDate: string;
     priority: "Low" | "Medium" | "High";
