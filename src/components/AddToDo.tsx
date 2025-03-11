@@ -6,8 +6,9 @@ import { useAddTodoMutation } from "../services/todoApi";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Oval } from "react-loader-spinner"; // Import the loader component
+import { ClipLoader } from "react-spinners"; // Import the ClipLoader component
 import { TodoFormData } from "../types/todo";
+
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
@@ -51,16 +52,8 @@ const AddTodo = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {loading && (
-        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">
-          <Oval
-            visible={true}
-            height="80"
-            width="80"
-            color="#4fa94d"
-            ariaLabel="oval-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-          />
+        <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
+          <ClipLoader color="#00BFFF" size={80} />
         </div>
       )}
       <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
