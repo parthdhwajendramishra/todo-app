@@ -11,7 +11,7 @@ export default function Home() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const router = useRouter();
 
-  const tableHeaders = ["User ID", "ID", "Title", "Completed"];
+  const tableHeaders = ["User ID", "ID", "Title", "Completed", "Actions"];
 
   const { data, error, isLoading, isSuccess, isError } = useGetTodosQuery({
     page: currentPage,
