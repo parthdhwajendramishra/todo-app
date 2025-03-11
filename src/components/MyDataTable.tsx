@@ -3,9 +3,10 @@ import React from "react";
 
 interface MyDataTableProps {
   data: Todo[];
+  headers: string[];
 }
 
-const MyDataTable: React.FC<MyDataTableProps> = ({ data }) => {
+const MyDataTable: React.FC<MyDataTableProps> = ({ data, headers }) => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Todo List</h1>
@@ -13,18 +14,14 @@ const MyDataTable: React.FC<MyDataTableProps> = ({ data }) => {
         <table className="min-w-full bg-white rounded-lg overflow-hidden">
           <thead className="bg-gradient-to-r from-blue-500 to-blue-600">
             <tr>
-              <th className="py-3 px-6 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                User ID
-              </th>
-              <th className="py-3 px-6 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                ID
-              </th>
-              <th className="py-3 px-6 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                Title
-              </th>
-              <th className="py-3 px-6 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                Completed
-              </th>
+              {headers.map((header, index) => (
+                <th
+                  key={index}
+                  className="py-3 px-6 text-left text-xs font-semibold text-white uppercase tracking-wider"
+                >
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">

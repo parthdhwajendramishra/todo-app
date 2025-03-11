@@ -1,0 +1,40 @@
+.pagination-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.pagination-page,
+.pagination-next,
+.pagination-previous,
+.pagination-break {
+    padding: 0.5rem 1rem;
+    background-color: #e2e8f0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.pagination-active {
+    background-color: #3b82f6;
+    color: white;
+}
+
+@media (max-width: 640px) {
+
+    .pagination-page,
+    .pagination-break {
+        display: none;
+    }
+
+    .pagination-container {
+        justify-content: space-between;
+    }
+
+    .pagination-next,
+    .pagination-previous {
+        flex: 1;
+        text-align: center;
+    }
+}

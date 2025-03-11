@@ -1,6 +1,6 @@
 // services/todoApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Todo } from '../types/todo';
+import { AddTodoData, Todo } from '../types/todo';
 
 export const todoApi = createApi({
   reducerPath: 'todoApi',
@@ -15,7 +15,7 @@ export const todoApi = createApi({
     searchTodos: builder.query<Todo[], string>({
       query: (title) => `/todos?title_like=${title}`, // Endpoint for searching todos by title
     }),
-    addTodo: builder.mutation<Todo, Partial<Todo>>({
+    addTodo: builder.mutation<AddTodoData, Partial<AddTodoData>>({
       query: (newTodo) => ({
         url: '/todos',
         method: 'POST',
