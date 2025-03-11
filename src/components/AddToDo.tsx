@@ -13,9 +13,13 @@ const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   dueDate: z.string().min(1, "Due date is required"),
-  priority: z.enum(["Low", "Medium", "High"], "Priority is required"),
+  priority: z.enum(["Low", "Medium", "High"]),
   assignedTo: z.string().min(1, "Assigned to is required"),
-  status: z.enum(["Pending", "In Progress", "Completed"], "Status is required"),
+  status: z
+    .enum(["Pending", "In Progress", "Completed"])
+    .refine((val) => val !== undefined, {
+      message: "Status is required",
+    }),
 });
 
 const AddTodo = () => {

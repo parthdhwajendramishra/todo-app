@@ -1,9 +1,4 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../app/store";
-import { DataTable } from "../components/DataTable"; // Shadcn UI Data Table
-import { columns } from "../components/Columns"; // Columns for the data table
-import { Todo } from "../types/todo";
 import MyDataTable from "@/components/MyDataTable";
 import { useGetTodosQuery, useSearchTodosQuery } from "@/services/todoApi";
 import ReactPaginate from "react-paginate";
@@ -11,8 +6,6 @@ import { useRouter } from "next/router";
 import "../styles/index.css"; // Import the CSS file
 
 export default function Home() {
-  const dispatch = useDispatch<AppDispatch>();
-  const todos = useSelector((state: RootState) => state.todos);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -44,9 +37,6 @@ export default function Home() {
     };
   }, [search]);
 
-  console.log("Data", data);
-  console.log("Search Data", searchData);
-
   // Handler for adding a new task
   const handleAddTask = () => {
     router.push("/addTask");
@@ -73,27 +63,48 @@ export default function Home() {
         placeholder="Search todos by title"
         className="border p-2 mb-4 w-full"
       />
-      {/* <DataTable columns={columns} data={todos} /> */}
-      <MyDataTable
-        data={debouncedSearch ? searchData ?? [] : data ?? []}
-        headers={tableHeaders}
-      />
-      <ReactPaginate
-        breakLabel="..."
-        nextLabel="next >"
-        onPageChange={handlePageChange}
-        containerClassName="pagination-container"
-        pageRangeDisplayed={5}
-        marginPagesDisplayed={2}
-        pageCount={9}
-        pageClassName="pagination-page"
-        activeClassName="pagination-active"
-        nextClassName="pagination-next"
-        breakClassName="pagination-break"
-        previousClassName="pagination-previous"
-        previousLabel="< previous"
-        renderOnZeroPageCount={null}
-      />
+      {isLoading && <p>Loading...</p>}
+      {isError && (
+        <p>
+          Error:{" "}
+          {error && "status" in error
+            ? `Status ${error.status}`
+            : error?.message}
+        </p>
+      )}
+      {isSuccess && (
+        <>
+          <MyDataTable
+            data={debouncedSearch ? searchData ?? [] : data ?? []}
+            headers={tableHeaders}
+          />
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel="next >"
+            onPageChange={handlePageChange}
+            containerClassName="pagination-container"
+            pageRangeDisplayed={5}
+            marginPagesDisplayed={2}
+            pageCount={9}
+            pageClassName="pagination-page"
+            activeClassName="pagination-active"
+            nextClassName="pagination-next"
+            breakClassName="pagination-break"
+            previousClassName="pagination-previous"
+            previousLabel="< previous"
+            renderOnZeroPageCount={null}
+          />
+        </>
+      )}
+      {searchLoading && <p>Loading search results...</p>}
+      {searchError && (
+        <p>
+          Error:{" "}
+          {"status" in searchError
+            ? `Status ${searchError.status}`
+            : searchError.message}
+        </p>
+      )}
     </div>
   );
 }
