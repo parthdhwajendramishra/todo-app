@@ -3,7 +3,7 @@ import MyDataTable from "@/components/MyDataTable";
 import { useGetTodosQuery, useSearchTodosQuery } from "@/services/todoApi";
 import ReactPaginate from "react-paginate";
 import { useRouter } from "next/router";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import "../../styles/index.css"; // Import the CSS file
 
 export default function Home() {
