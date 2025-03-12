@@ -89,6 +89,10 @@ const AddTodo: React.FC<AddTodoProps> = ({ initialData, mode }) => {
     }
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {loading && (
@@ -173,7 +177,7 @@ const AddTodo: React.FC<AddTodoProps> = ({ initialData, mode }) => {
               loading
                 ? "bg-gray-500 cursor-not-allowed"
                 : "bg-blue-500 hover:bg-blue-600"
-            } text-white px-4 py-2 rounded w-full transition duration-200`}
+            } text-white px-4 py-2 rounded w-full transition duration-200 cursor-pointer`}
           >
             {loading
               ? "Submitting..."
@@ -182,6 +186,12 @@ const AddTodo: React.FC<AddTodoProps> = ({ initialData, mode }) => {
               : "Update Todo"}
           </button>
         </form>
+        <button
+          onClick={handleBack}
+          className="bg-gray-500 text-white px-4 py-2 rounded w-full mt-4 transition duration-200 cursor-pointer"
+        >
+          Back
+        </button>
       </div>
       <ToastContainer />
     </div>

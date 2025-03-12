@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
-import MyDataTable from "@/components/MyDataTable";
+import DataTable from "@/components/DataTable";
 import { useGetTodosQuery, useSearchTodosQuery } from "@/services/todoApi";
 import ReactPaginate from "react-paginate";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import "../../styles/index.css"; // Import the CSS file
+
+interface ErrorType {
+  status?: number | string;
+  message?: string;
+  error?: string;
+}
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -16,19 +22,18 @@ export default function Home() {
 
   const tableHeaders = ["User ID", "ID", "Title", "Completed", "Actions"];
 
-  const { data, error, isLoading, isSuccess, isError } = useGetTodosQuery({
+  const { data, error, isSuccess, isError } = useGetTodosQuery({
     page: currentPage,
     limit: 10,
     sortOrder: "desc",
   });
 
-  const {
-    data: searchData,
-    error: searchError,
-    isLoading: searchLoading,
-  } = useSearchTodosQuery(debouncedSearch, {
-    skip: !debouncedSearch,
-  });
+  const { data: searchData, error: searchError } = useSearchTodosQuery(
+    debouncedSearch,
+    {
+      skip: !debouncedSearch,
+    }
+  );
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -57,6 +62,18 @@ export default function Home() {
   if (!session) {
     router.push("/"); // Return null to avoid rendering anything before redirection
   }
+
+  const renderError = (error: ErrorType) => {
+    if (error.message === "FETCH_ERROR") {
+      return <p>Network error: Please check your internet connection.</p>;
+    }
+    return (
+      <p>
+        Error:{" "}
+        {error && "status" in error ? `Status ${error.status}` : error?.message}
+      </p>
+    );
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -95,18 +112,11 @@ export default function Home() {
         placeholder="Search todos by title"
         className="border p-2 mb-4 w-full"
       />
-      {isLoading && <p>Loading...</p>}
-      {isError && (
-        <p>
-          Error:{" "}
-          {error && "status" in error
-            ? `Status ${error.status}`
-            : error?.message}
-        </p>
-      )}
+      {isError && renderError(error as ErrorType)}
+      {isError && renderError(error)}
       {isSuccess && (
         <>
-          <MyDataTable
+          <DataTable
             data={debouncedSearch ? searchData ?? [] : data ?? []}
             headers={tableHeaders}
           />
@@ -128,15 +138,8 @@ export default function Home() {
           />
         </>
       )}
-      {searchLoading && <p>Loading search results...</p>}
-      {searchError && (
-        <p>
-          Error:{" "}
-          {"status" in searchError
-            ? `Status ${searchError.status}`
-            : searchError.message}
-        </p>
-      )}
+      {searchError && renderError(searchError as ErrorType)}
+      {searchError && renderError(searchError)}
     </div>
   );
 }
